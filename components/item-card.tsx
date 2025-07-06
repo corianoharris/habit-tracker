@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useRef, useEffect } from "react"
 import type { HabitItem } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
@@ -54,8 +56,24 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [item, onEdit, onDelete, onToggleComplete])
 
-  const handleToggleComplete = () => {
+  const handleToggleComplete = (event: React.MouseEvent | React.TouchEvent) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    // Prevent multiple rapid taps
+    if (event.currentTarget.getAttribute("data-processing") === "true") {
+      return
+    }
+
+    event.currentTarget.setAttribute("data-processing", "true")
+
     onToggleComplete(item.id)
+
+    // Reset processing state after a short delay
+    setTimeout(() => {
+      event.currentTarget.setAttribute("data-processing", "false")
+    }, 300)
+
     // Announce completion to screen readers
     const announcement = item.completedToday
       ? `${item.name} marked as incomplete`
@@ -140,8 +158,10 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
                   : "hover:brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 border-0"
               }
               onClick={handleToggleComplete}
+              onTouchEnd={handleToggleComplete}
               aria-label={`Mark ${item.name} as ${item.completedToday ? "incomplete" : "complete"}`}
               aria-pressed={item.completedToday}
+              data-processing="false"
             >
               <Check className="w-4 h-4" aria-hidden="true" />
             </Button>
