@@ -60,18 +60,24 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
     event.preventDefault()
     event.stopPropagation()
 
+    // Store reference to the button element before setTimeout
+    const buttonElement = event.currentTarget as HTMLElement
+
     // Prevent multiple rapid taps
-    if (event.currentTarget.getAttribute("data-processing") === "true") {
+    if (buttonElement.getAttribute("data-processing") === "true") {
       return
     }
 
-    event.currentTarget.setAttribute("data-processing", "true")
+    buttonElement.setAttribute("data-processing", "true")
 
     onToggleComplete(item.id)
 
     // Reset processing state after a short delay
     setTimeout(() => {
-      event.currentTarget.setAttribute("data-processing", "false")
+      // Check if element still exists before setting attribute
+      if (buttonElement) {
+        buttonElement.setAttribute("data-processing", "false")
+      }
     }, 300)
 
     // Announce completion to screen readers
@@ -84,7 +90,11 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
     announcer.className = "sr-only"
     announcer.textContent = announcement
     document.body.appendChild(announcer)
-    setTimeout(() => document.body.removeChild(announcer), 2000)
+    setTimeout(() => {
+      if (document.body.contains(announcer)) {
+        document.body.removeChild(announcer)
+      }
+    }, 2000)
   }
 
   const handleDelete = () => {
