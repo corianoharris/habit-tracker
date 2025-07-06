@@ -159,7 +159,7 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
             )}
           </div>
 
-          <div className="flex items-center gap-2" role="group" aria-label="Item actions">
+          <div className="flex items-center gap-2 flex-wrap" role="group" aria-label="Item actions">
             <Button
               size="sm"
               variant={item.completedToday ? "default" : "outline"}
@@ -168,7 +168,7 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
                   ? "brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                   : "hover:brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 border-0"
               }
-              onClick={() => handleToggleComplete}
+              onClick={handleToggleComplete}
               disabled={isProcessing}
               aria-label={`Mark ${item.name} as ${item.completedToday ? "incomplete" : "complete"}`}
               aria-pressed={item.completedToday}
