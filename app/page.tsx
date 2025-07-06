@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useId } from "react"
 import type { HabitItem, SectionType, UserStats } from "@/lib/types"
 import { getItems, saveItems, getStats, saveStats, calculateLevel } from "@/lib/storage"
+import { v4 as uuidv4 } from "uuid";
 import SectionAccordion from "@/components/section-accordion"
 import StatsBanner from "@/components/stats-banner"
 import { Button } from "@/components/ui/button"
@@ -204,7 +205,7 @@ export default function Home() {
   const [stats, setStats] = useState<UserStats>({ totalXP: 0, level: 1, totalStreaks: 0 })
   const [hasInitialized, setHasInitialized] = useState(false)
 
-    const generateId = () => Date.now().toString() + Math.random().toString(36).substring(2, 9);
+    const generateId = () => uuidv4();
 
 
   useEffect(() => {
@@ -269,9 +270,6 @@ export default function Home() {
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [])
-
-
-
 
 
   const updateStats = useCallback((newItems: HabitItem[]) => {
