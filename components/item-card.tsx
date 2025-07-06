@@ -19,6 +19,7 @@ interface ItemCardProps {
 
 export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tabIndex = 0 }: ItemCardProps) {
   const [showDetails, setShowDetails] = useState(false)
+  const [isProcessing, setIsProcessing] = useState(false)
   const cardRef = useRef<HTMLDivElement>(null)
 
   // Keyboard navigation within card
@@ -56,28 +57,21 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [item, onEdit, onDelete, onToggleComplete])
 
-  const handleToggleComplete = (event: React.MouseEvent | React.TouchEvent) => {
+  const handleToggleComplete = (event: React.MouseEvent) => {
     event.preventDefault()
     event.stopPropagation()
 
-    // Store reference to the button element before setTimeout
-    const buttonElement = event.currentTarget as HTMLElement
-
-    // Prevent multiple rapid taps
-    if (buttonElement.getAttribute("data-processing") === "true") {
+    // Prevent multiple rapid clicks
+    if (isProcessing) {
       return
     }
 
-    buttonElement.setAttribute("data-processing", "true")
-
+    setIsProcessing(true)
     onToggleComplete(item.id)
 
     // Reset processing state after a short delay
     setTimeout(() => {
-      // Check if element still exists before setting attribute
-      if (buttonElement) {
-        buttonElement.setAttribute("data-processing", "false")
-      }
+      setIsProcessing(false)
     }, 300)
 
     // Announce completion to screen readers
@@ -168,10 +162,9 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
                   : "hover:brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 border-0"
               }
               onClick={handleToggleComplete}
-              onTouchEnd={handleToggleComplete}
+              disabled={isProcessing}
               aria-label={`Mark ${item.name} as ${item.completedToday ? "incomplete" : "complete"}`}
               aria-pressed={item.completedToday}
-              data-processing="false"
             >
               <Check className="w-4 h-4" aria-hidden="true" />
             </Button>
