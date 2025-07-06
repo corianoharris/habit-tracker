@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import type { HabitItem } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
@@ -21,22 +20,21 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
   const [showDetails, setShowDetails] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
 
-  const handleToggleComplete = (event: React.MouseEvent) => {
+  const handleToggleComplete = (event: React.MouseEvent | React.TouchEvent) => {
     event.preventDefault()
     event.stopPropagation()
 
-    // Prevent multiple rapid clicks
     if (isProcessing) {
       return
     }
 
     setIsProcessing(true)
+    console.log(`Event type: ${event.type}, Toggling item: ${item.id}`); // Debug log
     onToggleComplete(item.id)
 
-    // Reset processing state after a short delay
     setTimeout(() => {
       setIsProcessing(false)
-    }, 300)
+    }, 500);
   }
 
   const handleDelete = () => {
@@ -49,7 +47,7 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
     <Card
       className={`mb-2 transition-all shadow-sm ${
         item.completedToday ? "bg-green-50" : "bg-white hover:bg-gray-50"
-      } focus-within:outline-none focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2`}
+      } focus-within:outline-none focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2 touch-none`}
       tabIndex={tabIndex}
       role="article"
       aria-label={`${item.name} habit ${item.completedToday ? "completed" : "not completed"}`}
@@ -99,16 +97,17 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
             )}
           </div>
 
-          <div className="flex items-center gap-2" role="group" aria-label="Item actions">
+          <div className="flex items-center flex-wrap gap-2 " role="group" aria-label="Item actions">
             <Button
               size="sm"
               variant={item.completedToday ? "default" : "outline"}
               className={
                 item.completedToday
-                  ? "brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
-                  : "hover:brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 border-0"
+                  ? "brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 touch-none"
+                  : "hover:brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 border-0 touch-none"
               }
               onClick={handleToggleComplete}
+              onTouchEnd={handleToggleComplete} // Use onTouchEnd instead of onTouchStart
               disabled={isProcessing}
               aria-label={`Mark ${item.name} as ${item.completedToday ? "incomplete" : "complete"}`}
               aria-pressed={item.completedToday}

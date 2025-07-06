@@ -125,6 +125,7 @@ export default function SectionAccordion({
   }
 
   const handleAddClick = (e: React.MouseEvent) => {
+    e.preventDefault()
     e.stopPropagation()
     if (!isOpen) {
       setIsOpen(true)
@@ -181,6 +182,7 @@ export default function SectionAccordion({
           data-section-header
           className="w-full p-4 text-left hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 transition-colors rounded-t-lg"
           onClick={handleToggleSection}
+          onTouchStart={(e) => console.log(`Touch event on SectionAccordion header: ${section}`)} // Debug log
           aria-expanded={isOpen}
           aria-controls={`section-${section.toLowerCase()}`}
           tabIndex={tabIndex}

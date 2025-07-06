@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import SectionAccordion from "@/components/section-accordion"
 import StatsBanner from "@/components/stats-banner"
 import { Button } from "@/components/ui/button"
-import { BookOpen, Trophy, Target, TrendingUp } from "lucide-react"
+import { BookOpen, Trophy, Target, TrendingUp, Trash2 } from "lucide-react"
 import Link from "next/link"
 
 const sections: SectionType[] = ["Body", "Mind", "Work", "Meals", "Recovery", "Personal"]
@@ -368,6 +368,20 @@ export default function Home() {
               keyboard shortcuts.
             </p>
           </div>
+           <Button
+            variant="ghost"
+            size="sm"
+            className="mt-2 p-0 h-auto text-md hover:text-teal-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+            onClick={() => { 
+              localStorage.clear()
+              window.location.reload()
+            }}
+            aria-controls="clear-data"
+            aria-label="Clear all data"
+          >
+          <Trash2 className="w-4 h-4 mr-1" aria-hidden="true" />
+            clear data
+          </Button>
         </header>
 
         <StatsBanner stats={stats} />
