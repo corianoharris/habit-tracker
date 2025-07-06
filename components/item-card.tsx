@@ -23,39 +23,46 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
   const cardRef = useRef<HTMLDivElement>(null)
 
   // Keyboard navigation within card
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!cardRef.current?.contains(event.target as Node)) return
+ useEffect(() => {
+  const currentCard = cardRef.current
+  if (!currentCard) return
 
-      switch (event.key) {
-        case "Enter":
-        case " ":
-          if (event.target === cardRef.current) {
-            event.preventDefault()
-            onToggleComplete(item.id)
+  const handleKeyDown = (event: KeyboardEvent) => {
+    // Only handle keyboard when this card is focused
+    if (document.activeElement !== currentCard) return
+
+    switch (event.key) {
+      case "Enter":
+      case " ":
+        event.preventDefault()
+        onToggleComplete(item.id)
+        break
+
+      case "e":
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault()
+          onEdit(item)
+        }
+        break
+
+      case "Delete":
+      case "Backspace":
+        if (event.ctrlKey || event.metaKey) {
+          event.preventDefault()
+          if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
+            onDelete(item.id)
           }
-          break
-        case "e":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault()
-            onEdit(item)
-          }
-          break
-        case "Delete":
-        case "Backspace":
-          if (event.ctrlKey || event.metaKey) {
-            event.preventDefault()
-            if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
-              onDelete(item.id)
-            }
-          }
-          break
-      }
+        }
+        break
     }
+  }
 
-    document.addEventListener("keydown", handleKeyDown)
-    return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [item, onEdit, onDelete, onToggleComplete])
+  currentCard.addEventListener("keydown", handleKeyDown)
+  return () => {
+    currentCard.removeEventListener("keydown", handleKeyDown)
+  }
+}, [item, onEdit, onDelete, onToggleComplete])
+
 
   const handleToggleComplete = (event: React.MouseEvent) => {
     event.preventDefault()
@@ -161,7 +168,7 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
                   ? "brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
                   : "hover:brand-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 border-0"
               }
-              onClick={handleToggleComplete}
+              onClick={() => handleToggleComplete}
               disabled={isProcessing}
               aria-label={`Mark ${item.name} as ${item.completedToday ? "incomplete" : "complete"}`}
               aria-pressed={item.completedToday}
