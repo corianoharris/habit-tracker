@@ -204,7 +204,8 @@ export default function Home() {
   const [stats, setStats] = useState<UserStats>({ totalXP: 0, level: 1, totalStreaks: 0 })
   const [hasInitialized, setHasInitialized] = useState(false)
 
-   const id = useId();
+    const generateId = () => Date.now().toString() + Math.random().toString(36).substring(2, 9);
+
 
   useEffect(() => {
     // Remove dark mode class if it exists
@@ -221,7 +222,7 @@ export default function Home() {
         defaultItems[section].forEach((item) => {
           defaultHabitItems.push({
             ...item,
-            id: id,
+            id: generateId(),
             section,
             createdAt: new Date().toISOString(),
           })
@@ -269,9 +270,7 @@ export default function Home() {
     return () => document.removeEventListener("keydown", handleKeyDown)
   }, [])
 
-  // useEffect(() => {
-  //     const generateId = () => Date.now().toString() + Math.random().toString(36).substr(2, 9)
-  // }, [])
+
 
 
 
@@ -289,7 +288,7 @@ export default function Home() {
     (itemData: Omit<HabitItem, "id" | "createdAt">) => {
       const newItem: HabitItem = {
         ...itemData,
-        id: id,
+        id: generateId(),
         createdAt: new Date().toISOString(),
       }
       const newItems = [...items, newItem]
