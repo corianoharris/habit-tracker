@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useState } from "react"
 import type { HabitItem } from "@/lib/types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -20,49 +20,6 @@ interface ItemCardProps {
 export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tabIndex = 0 }: ItemCardProps) {
   const [showDetails, setShowDetails] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  const cardRef = useRef<HTMLDivElement>(null)
-
-  // Keyboard navigation within card
- useEffect(() => {
-  const currentCard = cardRef.current
-  if (!currentCard) return
-
-  const handleKeyDown = (event: KeyboardEvent) => {
-    // Only handle keyboard when this card is focused
-    if (document.activeElement !== currentCard) return
-
-    switch (event.key) {
-      case "Enter":
-      case " ":
-        event.preventDefault()
-        onToggleComplete(item.id)
-        break
-
-      case "e":
-        if (event.ctrlKey || event.metaKey) {
-          event.preventDefault()
-          onEdit(item)
-        }
-        break
-
-      case "Delete":
-      case "Backspace":
-        if (event.ctrlKey || event.metaKey) {
-          event.preventDefault()
-          if (confirm(`Are you sure you want to delete "${item.name}"?`)) {
-            onDelete(item.id)
-          }
-        }
-        break
-    }
-  }
-
-  currentCard.addEventListener("keydown", handleKeyDown)
-  return () => {
-    currentCard.removeEventListener("keydown", handleKeyDown)
-  }
-}, [item, onEdit, onDelete, onToggleComplete])
-
 
   const handleToggleComplete = (event: React.MouseEvent) => {
     event.preventDefault()
@@ -80,22 +37,6 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
     setTimeout(() => {
       setIsProcessing(false)
     }, 300)
-
-    // Announce completion to screen readers
-    const announcement = item.completedToday
-      ? `${item.name} marked as incomplete`
-      : `${item.name} completed! Earned ${item.xp} XP`
-    const announcer = document.createElement("div")
-    announcer.setAttribute("aria-live", "polite")
-    announcer.setAttribute("aria-atomic", "true")
-    announcer.className = "sr-only"
-    announcer.textContent = announcement
-    document.body.appendChild(announcer)
-    setTimeout(() => {
-      if (document.body.contains(announcer)) {
-        document.body.removeChild(announcer)
-      }
-    }, 2000)
   }
 
   const handleDelete = () => {
@@ -106,7 +47,6 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
 
   return (
     <Card
-      ref={cardRef}
       className={`mb-2 transition-all shadow-sm ${
         item.completedToday ? "bg-green-50" : "bg-white hover:bg-gray-50"
       } focus-within:outline-none focus-within:ring-2 focus-within:ring-teal-500 focus-within:ring-offset-2`}
@@ -159,7 +99,7 @@ export default function ItemCard({ item, onEdit, onDelete, onToggleComplete, tab
             )}
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap" role="group" aria-label="Item actions">
+          <div className="flex items-center gap-2" role="group" aria-label="Item actions">
             <Button
               size="sm"
               variant={item.completedToday ? "default" : "outline"}
